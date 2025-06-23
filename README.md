@@ -28,7 +28,7 @@ Antes de começar, você vai precisar ter as seguintes ferramentas instaladas em
 
 1.  **Clone o repositório:**
     ```bash
-   
+      git clone https://github.com/jessicaMarquess/nexus_tech.git
     ```
 
 2.  **Acesse a pasta do projeto:**
