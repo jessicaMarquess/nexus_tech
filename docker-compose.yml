@@ -1,0 +1,31 @@
+version: '3.8'
+services:
+  api:
+    build: .
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+    environment:
+      PORT: 3000
+      API_KEY: "${API_KEY}"
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: "${DB_USER}"
+      DB_PASSWORD: "${DB_PASSWORD}" 
+      DB_DATABASE: "${DB_DATABASE}" 
+
+  postgres:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: "${DB_USER}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD}"
+      POSTGRES_DB: "${DB_DATABASE}" 
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres_data:

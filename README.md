@@ -1,76 +1,110 @@
 # API de Notificações - NexusTech
 
+[![Node.js](https://img.shields.io/badge/Node.js-20.x-green.svg)](https://nodejs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg)](https://www.typescriptlang.org/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue.svg)](https://www.postgresql.org/)
+[![Docker](https://img.shields.io/badge/Docker-Powered-blue.svg)](https://www.docker.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 Este repositório contém o código-fonte da API REST de Notificações, um serviço interno da **NexusTech**.
 
-A API foi desenvolvida com Node.js e Express, e tem como objetivo gerenciar um sistema simples de notificações. O projeto demonstra o uso de middlewares para autenticação e tratamento de erros, e utiliza um armazenamento de dados em memória para simplicidade e agilidade no desenvolvimento.
+A aplicação foi desenvolvida utilizando uma stack moderna e robusta com **Node.js, TypeScript e Express**. Os dados são persistidos em um banco de dados **PostgreSQL**, e todo o ambiente de desenvolvimento é containerizado com **Docker e Docker Compose**, garantindo consistência e facilidade na configuração.
 
 ## ✨ Features
 
--   ✅ **Adicionar** uma nova notificação.
--   ✅ **Listar** todas as notificações existentes.
--   ✅ **Excluir** uma notificação pelo seu ID.
+-   ✅ **Adicionar**, **Listar** e **Excluir** notificações.
 -   🔐 **Autenticação** baseada em API Key para proteger os endpoints.
 -   ⚙️ **Middleware de tratamento de erros** para respostas padronizadas e seguras.
+-   🐘 **Persistência de dados** com PostgreSQL.
+-   🐳 **Ambiente de desenvolvimento** totalmente containerizado com Docker.
+-   🔄 **Gerenciamento de schema do banco de dados** com um sistema de Migrations.
 
 ## 🛠️ Tecnologias Utilizadas
 
--   [Node.js](https://nodejs.org/en/)
--   [Express.js](https://expressjs.com/pt-br/)
--   [uuid](https://www.npmjs.com/package/uuid) para a geração de IDs únicos.
+| Categoria              | Tecnologia                                                                               |
+| ---------------------- | ---------------------------------------------------------------------------------------- |
+| **Backend** | [Node.js](https://nodejs.org/en/), [Express.js](https://expressjs.com/pt-br/), [TypeScript](https://www.typescriptlang.org/) |
+| **Banco de Dados** | [PostgreSQL](https://www.postgresql.org/), [Kysely](https://kysely.dev/) (Query Builder), [node-pg-migrate](https://github.com/salsita/node-pg-migrate) |
+| **Containerização** | [Docker](https://www.docker.com/), [Docker Compose](https://docs.docker.com/compose/)      |
+| **Utilitários** | [dotenv](https://www.npmjs.com/package/dotenv), [ts-node-dev](https://www.npmjs.com/package/ts-node-dev) |
 
 ## 📋 Pré-requisitos
 
 Antes de começar, você vai precisar ter as seguintes ferramentas instaladas em sua máquina:
--   [Node.js (versão 18.x ou superior)](https://nodejs.org/en/)
--   [NPM](https://www.npmjs.com/) ou [Yarn](https://yarnpkg.com/)
+-   [**Docker** e **Docker Compose**](https://www.docker.com/products/docker-desktop/)
+-   [**Node.js** (versão 20.x ou superior)](https://nodejs.org/en/)
+-   [**NPM**](https://www.npmjs.com/)
+-   Um cliente de API como [Postman](https://www.postman.com/) ou [Insomnia](https://insomnia.rest/) para testar os endpoints.
 
 ## 🚀 Instalação e Execução
 
+Com o Docker, o processo de setup é simplificado e garante que o ambiente funcione de forma idêntica para todos os desenvolvedores.
+
 1.  **Clone o repositório:**
     ```bash
-      git clone https://github.com/jessicaMarquess/nexus_tech.git
+    git clone [https://github.com/jessicaMarquess/nexus_tech.git](https://github.com/jessicaMarquess/nexus_tech.git)
+    cd nexus_tech
     ```
 
-2.  **Acesse a pasta do projeto:**
+2.  **Configure as Variáveis de Ambiente:**
+    Crie uma cópia do arquivo de exemplo `.env.example` (se ele existir) ou crie um arquivo `.env` do zero. Este arquivo contém todas as variáveis necessárias para rodar a aplicação.
     ```bash
-    cd nexus-notifications-api
+    cp .env.example .env
     ```
+    *(Não é necessário alterar os valores padrão para o ambiente de desenvolvimento).*
 
-3.  **Instale as dependências:**
+3.  **Instale as dependências locais:**
+    Necessário para rodar os scripts de linha de comando, como as migrations.
     ```bash
     npm install
     ```
 
-4.  **Inicie o servidor:**
+4.  **Inicie os Serviços com Docker Compose:**
+    Este comando irá construir a imagem da sua API e iniciar os containers da API e do banco de dados em segundo plano.
     ```bash
-    npm start
+    docker-compose up -d --build
     ```
 
-O servidor será iniciado em `http://localhost:3000`.
+5.  **Execute as Migrations do Banco de Dados:**
+    Com os containers rodando, este comando irá criar as tabelas necessárias no banco de dados.
+    ```bash
+    npm run migrate -- up
+    ```
+
+**Pronto!** Sua API está rodando em `http://localhost:3000` e conectada ao banco de dados PostgreSQL.
+
+## 🔄 Gerenciamento do Banco de Dados (Migrations)
+
+Qualquer alteração na estrutura do banco de dados (criar tabelas, adicionar colunas, etc.) deve ser feita através de um novo arquivo de migration.
+
+-   **Para criar um novo arquivo de migration:**
+    ```bash
+    npm run migrate -- create <nome-descritivo-da-migration>
+    ```
+
+-   **Para aplicar todas as migrations pendentes:**
+    ```bash
+    npm run migrate -- up
+    ```
+
+-   **Para reverter a última migration aplicada:**
+    ```bash
+    npm run migrate -- down
+    ```
 
 ## 📡 Endpoints da API
 
-A seguir estão detalhados os endpoints disponíveis na API.
-
-### Autenticação
-
-Todos os endpoints requerem uma chave de API para serem acessados. A chave deve ser enviada no header da requisição.
+A API segue os mesmos contratos de antes. O header `Authorization` é obrigatório em todos os endpoints.
 
 -   **Header:** `Authorization`
--   **Valor:** `my-secret-api-key` (Esta é a chave de exemplo usada no projeto)
-
-Se a chave não for fornecida ou for inválida, a API retornará um erro `401 Unauthorized`.
+-   **Valor:** `my-secret-api-key` (definido no arquivo `.env`)
 
 ---
 
 ### 1. Listar Notificações
 
-Retorna a lista de todas as notificações cadastradas.
-
 -   **Método:** `GET`
 -   **Endpoint:** `/notifications`
--   **Headers:**
-    -   `Authorization: my-secret-api-key`
 -   **Resposta de Sucesso (200 OK):**
     ```json
     [
@@ -78,13 +112,7 @@ Retorna a lista de todas as notificações cadastradas.
             "id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
             "user": "ana.silva",
             "message": "Sua fatura de junho foi fechada.",
-            "createdAt": "2025-06-23T23:00:00.000Z"
-        },
-        {
-            "id": "f0e9d8c7-b6a5-4321-fedc-ba9876543210",
-            "user": "bruno.costa",
-            "message": "Lembrete: Reunião de equipe amanhã às 10h.",
-            "createdAt": "2025-06-23T23:05:10.000Z"
+            "created_at": "2025-06-24T00:00:10.345Z"
         }
     ]
     ```
@@ -93,13 +121,8 @@ Retorna a lista de todas as notificações cadastradas.
 
 ### 2. Adicionar Notificação
 
-Cria uma nova notificação.
-
 -   **Método:** `POST`
 -   **Endpoint:** `/notifications`
--   **Headers:**
-    -   `Authorization: my-secret-api-key`
-    -   `Content-Type: application/json`
 -   **Corpo da Requisição (Body):**
     ```json
     {
@@ -110,17 +133,10 @@ Cria uma nova notificação.
 -   **Resposta de Sucesso (201 Created):**
     ```json
     {
-        "id": "gerado-pela-api-uuid",
+        "id": "gerado-pelo-banco-uuid",
         "user": "carlos.santos",
         "message": "Seu pedido #12345 foi enviado.",
-        "createdAt": "2025-06-23T23:10:15.000Z"
-    }
-    ```
--   **Resposta de Erro (400 Bad Request):**
-    -   Caso os campos `user` ou `message` não sejam enviados.
-    ```json
-    {
-      "error": "Os campos 'user' e 'message' são obrigatórios."
+        "created_at": "2025-06-24T00:05:20.123Z"
     }
     ```
 
@@ -128,49 +144,25 @@ Cria uma nova notificação.
 
 ### 3. Excluir Notificação
 
-Remove uma notificação específica pelo seu `id`.
-
 -   **Método:** `DELETE`
 -   **Endpoint:** `/notifications/:id`
--   **Headers:**
-    -   `Authorization: my-secret-api-key`
--   **Parâmetro de URL:**
-    -   `id`: O ID da notificação a ser excluída.
--   **Resposta de Sucesso (204 No Content):**
-    -   Nenhum corpo de resposta é retornado.
--   **Resposta de Erro (404 Not Found):**
-    -   Caso a notificação com o `id` informado não exista.
-    ```json
-    {
-      "error": "Notificação não encontrada."
-    }
-    ```
+-   **Resposta de Sucesso (204 No Content):** Nenhum corpo de resposta.
 
-## ⚙️ Middlewares
+## 🗂️ Estrutura da Tabela `notifications`
 
-### `authMiddleware`
+A estrutura da nossa tabela principal é definida pela migration e criada no PostgreSQL.
 
-Este middleware é responsável por proteger os endpoints. Ele verifica a presença e a validade do header `Authorization`. Se a chave de API estiver incorreta ou ausente, a requisição é interrompida e uma resposta `401 Unauthorized` é enviada.
-
-### `errorMiddleware`
-
-Este é um middleware de tratamento de erros global. Ele captura quaisquer erros que ocorram durante o processamento da requisição (seja por um `throw new Error()` ou passando o erro para `next(error)`). Ele garante que o cliente sempre receba uma resposta JSON padronizada, evitando que a aplicação quebre e exponha *stack traces*.
-
-## 🗂️ Estrutura de Dados
-
-A entidade `Notificação` é armazenada em memória em um array simples. Cada objeto de notificação possui a seguinte estrutura:
-
-```typescript
-{
-  id: string;         // Gerado automaticamente com UUID v4
-  user: string;       // Identificador do usuário que recebe a notificação
-  message: string;    // Conteúdo da notificação
-  createdAt: Date;    // Data e hora da criação da notificação
-}
+```sql
+CREATE TABLE notifications (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    "user" VARCHAR(100) NOT NULL,
+    message TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
 ```
 
 ---
 
 ## 📄 Licença
 
-Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.# nexus_tech
+Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
